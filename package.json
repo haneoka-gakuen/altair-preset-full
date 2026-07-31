@@ -1,0 +1,107 @@
+{
+  "name": "@haneoka/altair-preset-full",
+  "version": "0.1.0",
+  "description": "Recommended independent authoring plugin preset for Altair",
+  "keywords": [
+    "visual-novel",
+    "story-editor",
+    "plugins",
+    "preset",
+    "altair"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/haneoka-gakuen/altair-preset-full.git"
+  },
+  "homepage": "https://github.com/haneoka-gakuen/altair-preset-full#readme",
+  "bugs": {
+    "url": "https://github.com/haneoka-gakuen/altair-preset-full/issues"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "pnpm@11.14.0",
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "LICENSE",
+    "NOTICE.md",
+    "README.md",
+    "SECURITY.md"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "verify:package": "node scripts/verify-package.mjs",
+    "check": "pnpm run typecheck && pnpm run build && pnpm run verify:package",
+    "prepack": "pnpm run check"
+  },
+  "peerDependencies": {
+    "@haneoka/altair": "^0.1.0",
+    "@haneoka/altair-plugin-adv": "^0.1.0",
+    "@haneoka/altair-plugin-drafts": "^0.1.0",
+    "@haneoka/altair-plugin-flow": "^0.1.0",
+    "@haneoka/altair-plugin-history": "^0.1.0",
+    "@haneoka/altair-plugin-marketplace": "^0.1.0",
+    "@haneoka/altair-plugin-prose": "^0.1.0",
+    "@haneoka/altair-plugin-vega-preview": "^0.1.0",
+    "@haneoka/altair-plugin-webgal": "^0.1.0",
+    "@haneoka/altair-plugin-workspace-browser": "^0.1.0"
+  },
+  "peerDependenciesMeta": {
+    "@haneoka/altair-plugin-adv": {
+      "optional": true
+    },
+    "@haneoka/altair-plugin-drafts": {
+      "optional": true
+    },
+    "@haneoka/altair-plugin-flow": {
+      "optional": true
+    },
+    "@haneoka/altair-plugin-history": {
+      "optional": true
+    },
+    "@haneoka/altair-plugin-marketplace": {
+      "optional": true
+    },
+    "@haneoka/altair-plugin-prose": {
+      "optional": true
+    },
+    "@haneoka/altair-plugin-vega-preview": {
+      "optional": true
+    },
+    "@haneoka/altair-plugin-webgal": {
+      "optional": true
+    },
+    "@haneoka/altair-plugin-workspace-browser": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@haneoka/altair": "workspace:*",
+    "typescript": "^6.0.3"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "altair": {
+    "pluginApi": 2,
+    "kind": "preset",
+    "capabilities": [],
+    "permissions": []
+  }
+}

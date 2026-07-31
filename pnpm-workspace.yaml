@@ -1,0 +1,12 @@
+packages:
+  - "."
+  - ".dependencies/altair"
+  - ".dependencies/altair/packages/preview-client"
+  - ".dependencies/vega"
+  - ".dependencies/vega/packages/protocol"
+
+linkWorkspacePackages: true
+autoInstallPeers: false
+
+allowBuilds:
+  esbuild: true
