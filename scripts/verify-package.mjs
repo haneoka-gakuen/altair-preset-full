@@ -13,10 +13,7 @@ if (!manifest.repository?.url?.endsWith("/altair-preset-full.git")) {
 if (manifest.license !== "MIT") {
   throw new Error("the preset must use the MIT license");
 }
-if (
-  manifest.publishConfig?.access !== "public" ||
-  manifest.publishConfig?.provenance !== true
-) {
+if (manifest.publishConfig?.access !== "public" || manifest.publishConfig?.provenance !== true) {
   throw new Error("public provenance publishing is required");
 }
 if (
@@ -53,21 +50,13 @@ for (const name of optionalPeers) {
   }
 }
 
-for (const prohibited of [
-  /import\s*\(/,
-  /\bfetch\s*\(/,
-  /\beval\s*\(/,
-  /\bnew\s+Function\s*\(/,
-]) {
+for (const prohibited of [/import\s*\(/, /\bfetch\s*\(/, /\beval\s*\(/, /\bnew\s+Function\s*\(/]) {
   if (prohibited.test(source)) {
     throw new Error(`preset source contains prohibited loader: ${prohibited}`);
   }
 }
 for (const name of optionalPeers) {
-  if (
-    source.includes(`from "${name}"`) ||
-    source.includes(`from '${name}'`)
-  ) {
+  if (source.includes(`from "${name}"`) || source.includes(`from '${name}'`)) {
     throw new Error(`preset cannot statically import implementation ${name}`);
   }
 }

@@ -1,8 +1,4 @@
-import type {
-  AltairPlugin,
-  AltairPluginHost,
-  AltairPluginManifest,
-} from "@haneoka/altair/plugins";
+import type { AltairPlugin, AltairPluginHost, AltairPluginManifest } from "@haneoka/altair/plugins";
 import type { StoryProjectPlugin } from "@haneoka/altair/model";
 
 export const ALTAIR_FULL_PRESET_PEER_RANGE = "^0.1.0" as const;
@@ -19,10 +15,7 @@ export interface AltairFullPresetDescriptor {
 }
 
 const descriptor = <
-  const T extends Omit<
-    AltairFullPresetDescriptor,
-    "dependencies" | "peerRange"
-  > & {
+  const T extends Omit<AltairFullPresetDescriptor, "dependencies" | "peerRange"> & {
     readonly dependencies?: Readonly<Record<string, string>>;
   },
 >(
@@ -74,22 +67,24 @@ export const ALTAIR_FULL_PRESET_DESCRIPTORS = Object.freeze([
     packageName: "@haneoka/altair-plugin-adv",
     exportName: "altairAdvPlugin",
     version: "0.1.0",
-    capabilities: [
-      "assets",
-      "commands",
-      "compiler",
-      "diagnostics",
-      "format",
-      "services",
-    ],
+    capabilities: ["assets", "commands", "compiler", "diagnostics", "format", "services"],
     permissions: [],
+  }),
+  descriptor({
+    id: "haneoka.altair-models",
+    packageName: "@haneoka/altair-plugin-models",
+    exportName: "altairModelsPlugin",
+    version: "0.1.0",
+    dependencies: { "haneoka.altair-adv": "^0.1.0" },
+    capabilities: ["editor", "panel"],
+    permissions: ["project.read", "project.write"],
   }),
   descriptor({
     id: "haneoka.altair-flow",
     packageName: "@haneoka/altair-plugin-flow",
     exportName: "altairFlowPlugin",
     version: "0.1.0",
-    capabilities: ["flow"],
+    capabilities: ["flow", "panel"],
     permissions: [],
   }),
   descriptor({
@@ -108,7 +103,7 @@ export const ALTAIR_FULL_PRESET_DESCRIPTORS = Object.freeze([
     dependencies: {
       "haneoka.altair-adv": "^0.1.0",
     },
-    capabilities: ["commands", "diagnostics", "format", "services"],
+    capabilities: ["commands", "diagnostics", "format", "services", "editor", "panel"],
     permissions: ["project.read", "project.write"],
   }),
   descriptor({
@@ -140,10 +135,8 @@ export const ALTAIR_FULL_PRESET_DESCRIPTORS = Object.freeze([
   }),
 ] as const);
 
-export type AltairFullPresetDescriptorValue =
-  (typeof ALTAIR_FULL_PRESET_DESCRIPTORS)[number];
-export type AltairFullPresetPluginId =
-  AltairFullPresetDescriptorValue["id"];
+export type AltairFullPresetDescriptorValue = (typeof ALTAIR_FULL_PRESET_DESCRIPTORS)[number];
+export type AltairFullPresetPluginId = AltairFullPresetDescriptorValue["id"];
 
 export const ALTAIR_FULL_PRESET_PLUGIN_IDS = Object.freeze(
   ALTAIR_FULL_PRESET_DESCRIPTORS.map(({ id }) => id),
@@ -153,13 +146,9 @@ export const ALTAIR_FULL_PRESET_PLUGIN_IDS = Object.freeze(
  * A caller-supplied plugin object or an already imported ESM namespace.
  * Loading remains the application's responsibility.
  */
-export type AltairSuppliedPluginModule =
-  | AltairPlugin
-  | Readonly<Record<string, unknown>>;
+export type AltairSuppliedPluginModule = AltairPlugin | Readonly<Record<string, unknown>>;
 
-export type AltairFullPresetModules = Readonly<
-  Partial<Record<AltairFullPresetPluginId, AltairSuppliedPluginModule>>
->;
+export type AltairFullPresetModules = Readonly<Partial<Record<AltairFullPresetPluginId, AltairSuppliedPluginModule>>>;
 
 export interface InstallAltairFullPresetOptions {
   /**
@@ -178,13 +167,9 @@ export interface AltairFullPresetInstallation {
   dispose(): Promise<void>;
 }
 
-const DESCRIPTOR_BY_ID = new Map(
-  ALTAIR_FULL_PRESET_DESCRIPTORS.map((entry) => [entry.id, entry]),
-);
+const DESCRIPTOR_BY_ID = new Map(ALTAIR_FULL_PRESET_DESCRIPTORS.map((entry) => [entry.id, entry]));
 
-const cloneProjectPlugin = (
-  entry: AltairFullPresetDescriptor,
-): StoryProjectPlugin =>
+const cloneProjectPlugin = (entry: AltairFullPresetDescriptor): StoryProjectPlugin =>
   Object.freeze({
     id: entry.id,
     version: entry.version,
@@ -194,9 +179,7 @@ const cloneProjectPlugin = (
     targets: Object.freeze({
       runtimes: Object.freeze(["altair"]),
     }),
-    ...(Object.keys(entry.dependencies).length
-      ? { dependencies: Object.freeze({ ...entry.dependencies }) }
-      : {}),
+    ...(Object.keys(entry.dependencies).length ? { dependencies: Object.freeze({ ...entry.dependencies }) } : {}),
     source: Object.freeze({
       type: "registry" as const,
       package: entry.packageName,
@@ -204,9 +187,8 @@ const cloneProjectPlugin = (
   });
 
 /** Returns a fresh, immutable project selection for the complete preset. */
-export const createAltairFullPresetProjectPlugins =
-  (): readonly StoryProjectPlugin[] =>
-    Object.freeze(ALTAIR_FULL_PRESET_DESCRIPTORS.map(cloneProjectPlugin));
+export const createAltairFullPresetProjectPlugins = (): readonly StoryProjectPlugin[] =>
+  Object.freeze(ALTAIR_FULL_PRESET_DESCRIPTORS.map(cloneProjectPlugin));
 
 const isPlugin = (value: unknown): value is AltairPlugin => {
   if (!value || typeof value !== "object") return false;
@@ -214,11 +196,7 @@ const isPlugin = (value: unknown): value is AltairPlugin => {
     readonly manifest?: unknown;
     readonly setup?: unknown;
   };
-  return (
-    Boolean(candidate.manifest) &&
-    typeof candidate.manifest === "object" &&
-    typeof candidate.setup === "function"
-  );
+  return Boolean(candidate.manifest) && typeof candidate.manifest === "object" && typeof candidate.setup === "function";
 };
 
 const unwrapPlugin = (
@@ -226,12 +204,7 @@ const unwrapPlugin = (
   descriptor: AltairFullPresetDescriptorValue,
 ): AltairPlugin => {
   if (isPlugin(module)) return module;
-  if (
-    module &&
-    typeof module === "object" &&
-    "default" in module &&
-    isPlugin(module.default)
-  ) {
+  if (module && typeof module === "object" && "default" in module && isPlugin(module.default)) {
     return module.default;
   }
   const named = module[descriptor.exportName];
@@ -241,30 +214,19 @@ const unwrapPlugin = (
   );
 };
 
-const requireApi2Manifest = (
-  manifest: AltairPluginManifest,
-  expected: AltairFullPresetDescriptor,
-): void => {
+const requireApi2Manifest = (manifest: AltairPluginManifest, expected: AltairFullPresetDescriptor): void => {
   if (manifest.id !== expected.id) {
-    throw new TypeError(
-      `Altair full preset expected ${expected.id}, received ${manifest.id}`,
-    );
+    throw new TypeError(`Altair full preset expected ${expected.id}, received ${manifest.id}`);
   }
   if (manifest.version !== expected.version) {
-    throw new TypeError(
-      `Altair full preset requires ${expected.id}@${expected.version}, received ${manifest.version}`,
-    );
+    throw new TypeError(`Altair full preset requires ${expected.id}@${expected.version}, received ${manifest.version}`);
   }
   if (manifest.apiVersion !== 2) {
-    throw new TypeError(
-      `Altair full preset requires API 2 for ${expected.id}`,
-    );
+    throw new TypeError(`Altair full preset requires API 2 for ${expected.id}`);
   }
 };
 
-const selectedDescriptors = (
-  options: InstallAltairFullPresetOptions,
-): readonly AltairFullPresetDescriptorValue[] => {
+const selectedDescriptors = (options: InstallAltairFullPresetOptions): readonly AltairFullPresetDescriptorValue[] => {
   if (options.pluginIds === undefined) {
     return ALTAIR_FULL_PRESET_DESCRIPTORS;
   }
@@ -285,9 +247,7 @@ const selectedDescriptors = (
       if (!requested.has(entry.id)) continue;
       for (const dependencyId of Object.keys(entry.dependencies)) {
         if (!DESCRIPTOR_BY_ID.has(dependencyId as AltairFullPresetPluginId)) {
-          throw new ReferenceError(
-            `Altair full preset dependency is unknown: ${entry.id} -> ${dependencyId}`,
-          );
+          throw new ReferenceError(`Altair full preset dependency is unknown: ${entry.id} -> ${dependencyId}`);
         }
         if (!requested.has(dependencyId as AltairFullPresetPluginId)) {
           requested.add(dependencyId as AltairFullPresetPluginId);
@@ -296,17 +256,10 @@ const selectedDescriptors = (
       }
     }
   }
-  return Object.freeze(
-    ALTAIR_FULL_PRESET_DESCRIPTORS.filter(({ id }) =>
-      requested.has(id),
-    ),
-  );
+  return Object.freeze(ALTAIR_FULL_PRESET_DESCRIPTORS.filter(({ id }) => requested.has(id)));
 };
 
-const removeOwned = async (
-  host: AltairPluginHost,
-  installed: readonly AltairFullPresetPluginId[],
-): Promise<void> => {
+const removeOwned = async (host: AltairPluginHost, installed: readonly AltairFullPresetPluginId[]): Promise<void> => {
   const errors: unknown[] = [];
   for (const id of [...installed].reverse()) {
     try {
@@ -317,10 +270,7 @@ const removeOwned = async (
   }
   if (errors.length === 1) throw errors[0];
   if (errors.length > 1) {
-    throw new AggregateError(
-      errors,
-      "Failed to dispose Altair full preset plugins",
-    );
+    throw new AggregateError(errors, "Failed to dispose Altair full preset plugins");
   }
 };
 
@@ -364,9 +314,7 @@ export const installAltairFullPreset = async (
     }
     const supplied = modules[entry.id];
     if (supplied === undefined) {
-      throw new ReferenceError(
-        `Altair full preset module is missing: ${entry.packageName}`,
-      );
+      throw new ReferenceError(`Altair full preset module is missing: ${entry.packageName}`);
     }
     const plugin = unwrapPlugin(supplied, entry);
     requireApi2Manifest(plugin.manifest, entry);
@@ -385,10 +333,7 @@ export const installAltairFullPreset = async (
     try {
       await removeOwned(host, owned);
     } catch (rollbackError) {
-      throw new AggregateError(
-        [installError, rollbackError],
-        "Altair full preset installation and rollback failed",
-      );
+      throw new AggregateError([installError, rollbackError], "Altair full preset installation and rollback failed");
     }
     throw installError;
   }
